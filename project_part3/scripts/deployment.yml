@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog-deployment
+  labels: 
+    app: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: week07.azurecr.io/book_catalog
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://week07_92wz_user:uihPPooA0PFMQc1IXjtoTPzvuqAbU7SU@dpg-crmed1g8fa8c73ah1ll0-a.oregon-postgres.render.com/week07_92wz"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: book-catalog
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+ 
+---
+##deployment for inventry management microservice
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventry-management-deployment
+  labels:
+    app: inventry-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventry-management
+  template:
+    metadata:
+      labels:
+        app: inventry-management
+    spec:
+      containers:
+      - name: inventry-management
+        image: week07.azurecr.io/inventory_management
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://week07_92wz_user:uihPPooA0PFMQc1IXjtoTPzvuqAbU7SU@dpg-crmed1g8fa8c73ah1ll0-a.oregon-postgres.render.com/week07_92wz"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventry-management-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: inventry-management
+  ports:
+  - protocol: TCP
+    port: 8001
+    targetPort: 8001
+  
